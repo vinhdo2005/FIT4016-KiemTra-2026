@@ -16,24 +16,25 @@ namespace OrderManagementApp.Models
         public int ProductId { get; set; }
         
         [ForeignKey("ProductId")]
-        public Product Product { get; set; }
+        public virtual Product Product { get; set; }
 
         [Required]
         [Column("order_number")]
-        public string OrderNumber { get; set; } // Format: ORD-YYYYMMDD-XXXX
+        public string OrderNumber { get; set; } = string.Empty;
 
         [Required]
-        [MaxLength(100)] // Length 2-100 logic in Service
+        [StringLength(100, MinimumLength = 2)]
         [Column("customer_name")]
-        public string CustomerName { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
 
         [Required]
         [Column("quantity")]
         public int Quantity { get; set; }
 
         [Required]
+        [EmailAddress]
         [Column("customer_email")]
-        public string CustomerEmail { get; set; } // Unique
+        public string CustomerEmail { get; set; } = string.Empty;
 
         [Required]
         [Column("order_date")]
@@ -48,7 +49,6 @@ namespace OrderManagementApp.Models
         [Column("updated_at")]
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
-        [cite_start]// Computed Status for display [cite: 39]
         [NotMapped]
         public string Status => DeliveryDate.HasValue ? "Delivered" : "Pending";
     }

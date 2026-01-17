@@ -6,32 +6,33 @@ namespace OrderManagementApp.Data
 {
     public class OrderDbContext : DbContext
     {
+        // Constructor mặc định rất quan trọng để tránh lỗi "No DbContext was found"
+        public OrderDbContext() { }
+
+        public OrderDbContext(DbContextOptions<OrderDbContext> options) : base(options) { }
+
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
 
-        // Cấu hình chuỗi kết nối (Cập nhật Server Name của bạn ở đây)
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
+                // Thay "Server=." bằng tên SQL Server của bạn nếu dùng bản Express: "Server=.\\SQLEXPRESS"
                 optionsBuilder.UseSqlServer("Server=.;Database=OrderManagement;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            [cite_start]// --- 1. Constraints (Fluent API) [cite: 9] ---
-            
-            // Products: Name & SKU unique
+            // 1. Constraints (Fluent API)
             modelBuilder.Entity<Product>().HasIndex(p => p.Name).IsUnique();
             modelBuilder.Entity<Product>().HasIndex(p => p.Sku).IsUnique();
 
-            // Orders: OrderNumber & CustomerEmail unique
             modelBuilder.Entity<Order>().HasIndex(o => o.OrderNumber).IsUnique();
             modelBuilder.Entity<Order>().HasIndex(o => o.CustomerEmail).IsUnique();
 
-            [cite_start]// --- 2. Data Seeding [cite: 10-12] ---
-            
+            // 2. Data Seeding
             // Seed 15 Products
             var products = new Product[15];
             for (int i = 1; i <= 15; i++)
@@ -59,13 +60,12 @@ namespace OrderManagementApp.Data
                 orders[i - 1] = new Order
                 {
                     Id = i,
-                    ProductId = (i % 15) + 1, // Link to existing products
+                    ProductId = (i % 15) + 1,
                     OrderNumber = $"ORD-{baseDate:yyyyMMdd}-{i:0000}",
                     CustomerName = $"User Test {i}",
                     CustomerEmail = $"user{i}@test.com",
                     Quantity = 1,
                     OrderDate = baseDate,
-                    // Half delivered, half pending
                     DeliveryDate = i % 2 == 0 ? baseDate.AddDays(3) : (DateTime?)null,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now

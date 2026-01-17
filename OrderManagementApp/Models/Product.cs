@@ -13,12 +13,14 @@ namespace OrderManagementApp.Models
         public int Id { get; set; }
 
         [Required]
+        [StringLength(255)]
         [Column("name")]
-        public string Name { get; set; } // Unique configured in Fluent API
+        public string Name { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(50)]
         [Column("sku")]
-        public string Sku { get; set; } // Unique configured in Fluent API
+        public string Sku { get; set; } = string.Empty;
 
         [Column("description")]
         public string? Description { get; set; }
@@ -32,8 +34,9 @@ namespace OrderManagementApp.Models
         public int StockQuantity { get; set; }
 
         [Required]
+        [StringLength(100)]
         [Column("category")]
-        public string Category { get; set; }
+        public string Category { get; set; } = string.Empty;
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -42,6 +45,6 @@ namespace OrderManagementApp.Models
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         // Navigation Property
-        public ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
